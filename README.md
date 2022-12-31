@@ -55,6 +55,7 @@ Because of the use of `realloc`, you must create a new string with `malloc` or u
 - `void cord_wrap(char **str, int length);`
 - `void cord_remove_char(char **str, char c);`
 - `void cord_iremove_char(char **str, char c);`
+- `bool cord_includes(char **str, char *substr);`
 
 ## Planned Features
 

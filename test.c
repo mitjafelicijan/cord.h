@@ -65,6 +65,9 @@ int main(void)
     cord_remove_char(&k, 'i');
     debug(k, "remove_char");
 
+    printf("f:cord_includes (c): %d\n", cord_includes(&o, "c"));
+    printf("f:cord_includes (::): %d\n", cord_includes(&o, "::"));
+
     cord_free_string(&o);
     cord_free_string(&k);
 

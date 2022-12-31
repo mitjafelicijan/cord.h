@@ -31,6 +31,10 @@ CORDDEF bool cord_ends_with(char **str, char *end);
 CORDDEF void cord_wrap(char **str, int length);
 CORDDEF void cord_remove_char(char **str, char c);
 CORDDEF void cord_iremove_char(char **str, char c);
+CORDDEF bool cord_includes(char **str, char *substr);
+
+// CORDDEF void cord_ljust(char **str, char c, int length);
+// CORDDEF void cord_rjust(char **str, char c, int length);
 
 #endif // CORD_H_
 
@@ -378,6 +382,33 @@ CORDDEF void cord_iremove_char(char **str, char c)
     new_str[new_len] = '\0';
     free(*str);
     *str = new_str;
+}
+
+// If a string includes a substring.
+CORDDEF bool cord_includes(char **str, char *substr)
+{
+    int len = strlen(*str);
+    int substr_len = strlen(substr);
+    for (int i = 0; i < len; i++)
+    {
+        if ((*str)[i] == substr[0])
+        {
+            bool found = true;
+            for (int j = 0; j < substr_len; j++)
+            {
+                if ((*str)[i + j] != substr[j])
+                {
+                    found = false;
+                    break;
+                }
+            }
+            if (found)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 #endif // CORD_IMPLEMENTATION
