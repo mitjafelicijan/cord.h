@@ -18,8 +18,10 @@ ifeq ($(DEBUG), 1)
 CFLAGS += -W -ggdb
 endif
 
+.PHONY: all
+
 test: clean test.c
 	$(CC) -o test test.c $(CFLAGS) $(INCLUDES) $(LDLIBS)
 
 clean:
-	-rm test
+	@-rm test

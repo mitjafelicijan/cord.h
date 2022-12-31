@@ -1,14 +1,12 @@
 # Small C library for handling strings
 
 <p align="center">
-
-![Hi](https://user-images.githubusercontent.com/296714/210126037-85383a55-1ee4-4128-bd0b-08d2a02a7062.png)
-
+<img src="https://user-images.githubusercontent.com/296714/210126037-85383a55-1ee4-4128-bd0b-08d2a02a7062.png" height="200">
 </p>
 
-IMPORTANT! THIS LIBRARY IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS LIBRARY AT YOUR OWN RISK!
+**IMPORTANT! THIS LIBRARY IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS LIBRARY AT YOUR OWN RISK!**
 
-It's an STB style header which also includes the implementation part. You can enable the implementation part by defining `CORD_IMPLEMENTATION` before including the header.
+This is a STB style header which also includes the implementation part. You can enable the implementation part by defining `CORD_IMPLEMENTATION` before including the header.
 
 Library is not using any external dependencies and uses only standards C libraries.
 
@@ -26,10 +24,12 @@ int main(void)
     cord_trim(&str);
     cord_ireplace_char(&str, 'O', '-');
     cord_free_string(&str);
+
+    // And so on...
 }
 ```
 
-Because of the use of `realloc`, you must create new string with `malloc` or use the function that comes with the library called `cordc_new_string`.
+Because of the use of `realloc`, you must create a new string with `malloc` or use the function that comes with the library called `cordc_new_string`. Other than that, the string behaves like a normal C string. So all the function that come with `string.h` can be used with it.
 
 ## Current Features
 
@@ -55,14 +55,42 @@ Because of the use of `realloc`, you must create new string with `malloc` or use
 
 ## Planned Features
 
-- [ ] wordwrap()
-- [ ] split()
-- [ ] join()
+- `wordwrap()`
+- `split()`
+- `join()`
 
 ## Demo
 
-By default it uses `clang` and you can change it by editing the `Makefile`, specifically `CC` variable.
+By default it uses `clang` and you can change it by editing the `Makefile`, specifically `CC` variable. Or you can also override it by passing it as an argument to `make` command like `make CC=gcc`.
 
 ```sh
-make
+make # will use clang
+
+make CC=gcc # will use gcc
+
+./test # will run the test program
+```
+
+This will run the test program and print the output to the console. The output should look like this:
+
+```text
+f:new_string :: l:11 => v:`  Hello    `
+f:ltrim :: l:9 => v:`Hello    `
+f:rtrim :: l:5 => v:`Hello`
+f:append_char :: l:6 => v:`HelloA`
+f:append_string :: l:9 => v:`HelloABCD`
+f:to_uppercase :: l:9 => v:`HELLOABCD`
+f:to_lowercase :: l:9 => v:`helloabcd`
+f:char_at char_at: l
+f:index_of index_of: 2
+f:repeat_char :: l:19 => v:`helloabcdXXXXXXXXXX`
+f:reverse :: l:19 => v:`XXXXXXXXXXdcbaolleh`
+f:replace_char :: l:19 => v:`++++++++++dcbaolleh`
+f:ireplace_char :: l:19 => v:`++++++++++dcbaoQQeh`
+f:pad_start :: l:24 => v:`_____++++++++++dcbaoQQeh`
+f:pad_end :: l:29 => v:`_____++++++++++dcbaoQQeh_____`
+f:starts_with (__): 1
+f:starts_with ( ): 0
+f:ends_with (__): 1
+f:ends_with ( ): 0
 ```

@@ -31,8 +31,8 @@ int main(void)
     cord_to_lowercase(&o);
     debug(o, "to_lowercase");
 
-    printf("f:cord_char_at char_at: %c\n", cord_char_at(&o, 3));
-    printf("f:cord_index_of index_of: %d\n", cord_index_of(&o, 'l'));
+    printf("f:char_at char_at: %c\n", cord_char_at(&o, 3));
+    printf("f:index_of index_of: %d\n", cord_index_of(&o, 'l'));
 
     cord_repeat_char(&o, 'X', 10);
     debug(o, "repeat_char");
