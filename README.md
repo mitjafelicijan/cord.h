@@ -132,4 +132,4 @@ ulla paratur. Excepteur snt occaecat cupdatat non prodent, sunt n culpa qu
 
 ## License
 
-cord.c was written by Mitja Felicijan and is released under the BSD two-clause license, see the LICENSE file for more information.
+[cord.h](https://github.com/mitjafelicijan/cord.h) was written by [Mitja Felicijan](https://mitjafelicijan.com/) and is released under the BSD two-clause license, see the LICENSE file for more information.
