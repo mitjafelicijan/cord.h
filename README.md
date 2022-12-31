@@ -95,4 +95,16 @@ f:starts_with (__): 1
 f:starts_with ( ): 0
 f:ends_with (__): 1
 f:ends_with ( ): 0
+f:wrap (80): Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
+ncididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostru
+d exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aut
+e irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat n
+ulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+ officia deserunt mollit anim id est laborum.
+f:remove_char :: l:408 => v:`Lorem psum dolor st amet, consectetur adpscng elt, sed do eusmod tempor 
+ncddunt ut labore et dolore magna alqua. Ut enm ad mnm venam, qus nostru
+d exerctaton ullamco labors ns ut alqup ex ea commodo consequat. Dus aut
+e rure dolor n reprehendert n voluptate velt esse cllum dolore eu fugat n
+ulla paratur. Excepteur snt occaecat cupdatat non prodent, sunt n culpa qu
+ offca deserunt mollt anm d est laborum.`
 ```
