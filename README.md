@@ -17,7 +17,7 @@
 
 **IMPORTANT! THIS LIBRARY IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS LIBRARY AT YOUR OWN RISK!**
 
-This is a STB style header which also includes the implementation part. You can enable the implementation part by defining `CORD_IMPLEMENTATION` before including the header.
+This is a STB style header which also includes the implementation part. You can enable the implementation part by defining `CORD_IMPLEMENTATION` before including the header. It does not [follow strict STB style](https://github.com/nothings/stb/blob/master/docs/stb_howto.txt), but it is close enough.
 
 Library is not using any external dependencies and uses only standards C libraries.
 
@@ -128,7 +128,9 @@ ulla paratur. Excepteur snt occaecat cupdatat non prodent, sunt n culpa qu
 
 ## Alternative Libraries
 
-- [Simple Dynamic Strings library for C](https://github.com/antirez/sds)
+- [antirez/sds - Simple Dynamic Strings library for C](https://github.com/antirez/sds)
+- [tsoding/sv - Simple String_View implementation for C programming language.](https://github.com/tsoding/sv)
+- [MichaelJWelsh/SmartString - A Lightweight, Fast, and Safe C Library Meant to Mimic String Functionality Present in C++](https://github.com/MichaelJWelsh/SmartString)
 
 ## License
 
