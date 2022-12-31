@@ -52,10 +52,12 @@ Because of the use of `realloc`, you must create a new string with `malloc` or u
 - `void cord_pad_end(char **str, char c, int count);`
 - `bool cord_starts_with(char **str, char *start);`
 - `bool cord_ends_with(char **str, char *end);`
+- `void cord_wrap(char **str, int length);`
+- `void cord_remove_char(char **str, char c);`
+- `void cord_iremove_char(char **str, char c);`
 
 ## Planned Features
 
-- `wordwrap()`
 - `split()`
 - `join()`
 

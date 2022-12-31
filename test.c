@@ -58,7 +58,15 @@ int main(void)
     printf("f:ends_with (__): %d\n", cord_ends_with(&o, "__"));
     printf("f:ends_with ( ): %d\n", cord_ends_with(&o, " "));
 
+    char *k = cord_new_string("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+    cord_wrap(&k, 25);
+    printf("f:wrap (25): %s\n", k);
+
+    cord_remove_char(&k, 'i');
+    debug(k, "remove_char");
+
     cord_free_string(&o);
+    cord_free_string(&k);
 
     return 0;
 }

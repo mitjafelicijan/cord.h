@@ -28,6 +28,9 @@ CORDDEF void cord_pad_start(char **str, char c, int count);
 CORDDEF void cord_pad_end(char **str, char c, int count);
 CORDDEF bool cord_starts_with(char **str, char *start);
 CORDDEF bool cord_ends_with(char **str, char *end);
+CORDDEF void cord_wrap(char **str, int length);
+CORDDEF void cord_remove_char(char **str, char c);
+CORDDEF void cord_iremove_char(char **str, char c);
 
 #endif // CORD_H_
 
@@ -299,6 +302,82 @@ CORDDEF bool cord_ends_with(char **str, char *end)
         }
     }
     return true;
+}
+
+// Wraps a string to a specific length.
+CORDDEF void cord_wrap(char **str, int length)
+{
+    int len = strlen(*str);
+    int new_len = len + (len / length);
+    char *new_str = malloc(new_len + 1);
+    int j = 0;
+    for (int i = 0; i < len; i++)
+    {
+        if (i % length == 0 && i != 0)
+        {
+            new_str[j] = '\n';
+            j++;
+        }
+        new_str[j] = (*str)[i];
+        j++;
+    }
+    new_str[new_len] = '\0';
+    free(*str);
+    *str = new_str;
+}
+
+// Remove a character from a string.
+CORDDEF void cord_remove_char(char **str, char c)
+{
+    int len = strlen(*str);
+    int new_len = len;
+    for (int i = 0; i < len; i++)
+    {
+        if ((*str)[i] == c)
+        {
+            new_len--;
+        }
+    }
+    char *new_str = malloc(new_len + 1);
+    int j = 0;
+    for (int i = 0; i < len; i++)
+    {
+        if ((*str)[i] != c)
+        {
+            new_str[j] = (*str)[i];
+            j++;
+        }
+    }
+    new_str[new_len] = '\0';
+    free(*str);
+    *str = new_str;
+}
+
+// Remove a character from a string case insensitive.
+CORDDEF void cord_iremove_char(char **str, char c)
+{
+    int len = strlen(*str);
+    int new_len = len;
+    for (int i = 0; i < len; i++)
+    {
+        if ((*str)[i] == c || (*str)[i] == c + 32 || (*str)[i] == c - 32)
+        {
+            new_len--;
+        }
+    }
+    char *new_str = malloc(new_len + 1);
+    int j = 0;
+    for (int i = 0; i < len; i++)
+    {
+        if ((*str)[i] != c && (*str)[i] != c + 32 && (*str)[i] != c - 32)
+        {
+            new_str[j] = (*str)[i];
+            j++;
+        }
+    }
+    new_str[new_len] = '\0';
+    free(*str);
+    *str = new_str;
 }
 
 #endif // CORD_IMPLEMENTATION
