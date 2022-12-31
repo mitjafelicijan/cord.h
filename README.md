@@ -1,8 +1,19 @@
 # Small C library for handling strings
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/296714/210126037-85383a55-1ee4-4128-bd0b-08d2a02a7062.png" height="200">
+<img src="https://user-images.githubusercontent.com/296714/210154188-5e45d4cd-f2e9-492e-acf4-6c9978d855d2.png" height="200">
 </p>
+
+**Table of Contents**
+
+- [Quick Example](#quick-example)
+- [Current Features](#current-features)
+- [Observations \& Critics](#observations--critics)
+- [Planned Features](#planned-features)
+- [Demo](#demo)
+- [Alternative Libraries](#alternative-libraries)
+- [License](#license)
+
 
 **IMPORTANT! THIS LIBRARY IS A WORK IN PROGRESS! ANYTHING CAN CHANGE AT ANY MOMENT WITHOUT ANY NOTICE! USE THIS LIBRARY AT YOUR OWN RISK!**
 
@@ -57,6 +68,11 @@ Because of the use of `realloc`, you must create a new string with `malloc` or u
 - `void cord_iremove_char(char **str, char c);`
 - `bool cord_includes(char **str, char *substr);`
 
+## Observations & Critics
+
+- `cord_includes` should probably return the index of the first occurrence instead of `true` or `false`.
+- `cord_pad_start` and `cord_pad_end` are weird and should be fixed to be more like `ljust` and `rjust` from Ruby.
+
 ## Planned Features
 
 - `split()`
@@ -109,3 +125,11 @@ e rure dolor n reprehendert n voluptate velt esse cllum dolore eu fugat n
 ulla paratur. Excepteur snt occaecat cupdatat non prodent, sunt n culpa qu
  offca deserunt mollt anm d est laborum.`
 ```
+
+## Alternative Libraries
+
+- [Simple Dynamic Strings library for C](https://github.com/antirez/sds)
+
+## License
+
+cord.c was written by Mitja Felicijan and is released under the BSD two-clause license, see the LICENSE file for more information.
