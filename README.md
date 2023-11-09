@@ -1,9 +1,5 @@
 # Small C library for handling strings
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/296714/210154188-5e45d4cd-f2e9-492e-acf4-6c9978d855d2.png" height="200">
-</p>
-
 **Table of Contents**
 
 - [Quick Example](#quick-example)
