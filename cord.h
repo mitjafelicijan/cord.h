@@ -133,12 +133,7 @@ CORDDEF size_t cord_string_len(cordString str)
 // Append a character at the end of the string.
 CORDDEF void cord_append_char(char **str, char c)
 {
-    size_t len = cord_string_len(*str);
-    *str = cord_realloc_string(str, (len + 3));
-
-    (*str)[len] = c;
-    (*str)[len + 1] = '\0';
-    CORD_STRING_LEN(*str) += 1;
+    return cord_append_string_len(str, &c, 1);
 }
 
 // Append a string at the end of the string.
@@ -153,7 +148,7 @@ CORDDEF void cord_append_string_len(cordString* str, const char *c, size_t size)
     size_t len = cord_string_len(*str);
     
     if (len + size + 1 >= CORD_STRING_CAP(*str))
-        *str = cord_realloc_string(str, (len + size + 2));
+        *str = cord_realloc_string(str, (len + size + 9));
 
     strncpy((*str) + len, c, size);
     (*str)[len + size] = '\0';
