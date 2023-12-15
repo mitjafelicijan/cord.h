@@ -4,88 +4,166 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 #ifndef CORDDEF
 #define CORDDEF static inline
 #endif
 
-CORDDEF char *cord_new_string(char *str);
-CORDDEF void cord_free_string(char **str);
-CORDDEF void cord_append_char(char **str, char c);
-CORDDEF void cord_append_string(char **str, char *str2);
-CORDDEF void cord_to_uppercase(char **str);
-CORDDEF void cord_to_lowercase(char **str);
-CORDDEF void cord_trim(char **str);
-CORDDEF void cord_ltrim(char **str);
-CORDDEF void cord_rtrim(char **str);
-CORDDEF char cord_char_at(char **str, int index);
-CORDDEF int cord_index_of(char **str, char c);
-CORDDEF void cord_repeat_char(char **str, char c, int count);
-CORDDEF void cord_reverse(char **str);
-CORDDEF void cord_replace_char(char **str, char c, char new_c);
-CORDDEF void cord_ireplace_char(char **str, char c, char new_c);
-CORDDEF void cord_pad_start(char **str, char c, int count);
-CORDDEF void cord_pad_end(char **str, char c, int count);
-CORDDEF bool cord_starts_with(char **str, char *start);
-CORDDEF bool cord_ends_with(char **str, char *end);
-CORDDEF void cord_wrap(char **str, int length);
-CORDDEF void cord_remove_char(char **str, char c);
-CORDDEF void cord_iremove_char(char **str, char c);
-CORDDEF bool cord_includes(char **str, char *substr);
+#define CORD_STRING_HEADER(str) ((cordString_header*)(str) - 1)
 
-// CORDDEF void cord_ljust(char **str, char c, int length);
-// CORDDEF void cord_rjust(char **str, char c, int length);
+#define CORD_STRING_LEN(str) CORD_STRING_HEADER((str))->len
+#define CORD_STRING_CAP(str) CORD_STRING_HEADER((str))->cap
+
+typedef struct cordString_header {
+    size_t len, cap;
+} cordString_header;
+
+typedef char* cordString;
+
+CORDDEF cordString cord_new_string_reserve(size_t len);
+CORDDEF cordString cord_new_string_len(const char* str, size_t str_len);
+CORDDEF  cordString cord_new_string(const char* str);
+CORDDEF void cord_free_string(cordString* str);
+CORDDEF size_t cord_string_len(cordString str);
+CORDDEF cordString cord_realloc_string(cordString* str, size_t newSize);
+CORDDEF void cord_append_char(cordString* str, char c);
+CORDDEF void cord_append_string_len(cordString* str, const char* str2, size_t len);
+CORDDEF void cord_append_string(cordString* str, const char* str2);
+CORDDEF void cord_to_uppercase(cordString* str);
+CORDDEF void cord_to_lowercase(cordString* str);
+CORDDEF void cord_trim(cordString* str);
+CORDDEF void cord_ltrim(cordString * str);
+CORDDEF void cord_rtrim(cordString* str);
+CORDDEF char cord_char_at(cordString* str, int index);
+CORDDEF int cord_index_of(cordString* str, char c);
+CORDDEF void cord_repeat_char(cordString* str, char c, int count);
+CORDDEF void cord_reverse(cordString* str);
+CORDDEF void cord_replace_char(cordString* str, char c, char new_c);
+CORDDEF void cord_ireplace_char(cordString* str, char c, char new_c);
+CORDDEF void cord_pad_start(cordString* str, char c, int count);
+CORDDEF void cord_pad_end(cordString* str, char c, int count);
+CORDDEF bool cord_starts_with_len(cordString* str, const char* start, size_t len);
+CORDDEF bool cord_starts_with(cordString* str, const char* start);
+CORDDEF bool cord_ends_with_len(cordString* str,  const char* end, size_t len);
+CORDDEF bool cord_ends_with(cordString* str,  const char* end);
+CORDDEF void cord_wrap(cordString* str, size_t length);
+CORDDEF void cord_remove_char(cordString* str, char c);
+CORDDEF void cord_iremove_char(cordString* str, char c);
+CORDDEF bool cord_includes_len(cordString* str, const char* substr, size_t len);
+CORDDEF bool cord_includes(cordString* str, const char* substr);
+
+// CORDDEF void cord_ljust(char **str, char c, size_t length);
+// CORDDEF void cord_rjust(char **str, char c, size_t length);
 
 #endif // CORD_H_
 
 #ifdef CORD_IMPLEMENTATION
 
 // Create a new string.
-CORDDEF char *cord_new_string(char *str)
+CORDDEF char* cord_new_string(const char *str)
 {
-    char *new_str = malloc(strlen(str) + 1);
-    strcpy(new_str, str);
-    return new_str;
+    return cord_new_string_len(str, strlen(str));
+}
+
+// create a new string (using a set length)
+CORDDEF cordString cord_new_string_reserve(size_t len) 
+{
+	void* ptr = malloc(sizeof(cordString_header) + (len + 1));
+	
+	cordString res_str = (cordString)ptr + sizeof(cordString_header);
+	res_str[len] = '\0';
+
+	cordString_header* header = CORD_STRING_HEADER(res_str);
+	header->len = 0;
+	header->cap = len;
+
+	return res_str;
+}
+
+// create a new string (using the string length)
+CORDDEF cordString cord_new_string_len(const char* str, size_t str_len) 
+{
+	cordString res_str = cord_new_string_reserve(str_len);
+	memcpy(res_str, str, str_len);
+
+	cordString_header* header = CORD_STRING_HEADER(res_str);
+	header->len = str_len;
+
+	return res_str;
 }
 
 // Free a string.
-CORDDEF void cord_free_string(char **str)
+CORDDEF void cord_free_string(cordString* str)
 {
-    free(*str);
+    if (*str == NULL)
+        return; 
+    
+    free((CORD_STRING_HEADER(*str)));
     *str = NULL;
+}
+
+// realloc memory for a string
+CORDDEF cordString cord_realloc_string(cordString* str, size_t newSize) 
+{
+    size_t len = cord_string_len(*str);
+
+	cordString res_str = cord_new_string_reserve(newSize);
+	memcpy(res_str, *str, len);
+
+    cord_free_string(str);
+    
+    CORD_STRING_LEN(res_str) = len;
+
+    if (res_str != NULL)
+        return res_str;
+
+    printf("realloc failed\n");
+    exit(1);
+
+    return NULL;
+}
+
+// get the string's length
+CORDDEF size_t cord_string_len(cordString str) 
+{
+    return CORD_STRING_LEN(str);
 }
 
 // Append a character at the end of the string.
 CORDDEF void cord_append_char(char **str, char c)
 {
-    int len = strlen(*str);
-    *str = realloc(*str, (len + 3) * sizeof(char));
-    if (*str == NULL)
-    {
-        printf("realloc failed\n");
-        exit(1);
-    }
+    size_t len = cord_string_len(*str);
+    *str = cord_realloc_string(str, (len + 3));
+
     (*str)[len] = c;
     (*str)[len + 1] = '\0';
+    CORD_STRING_LEN(*str) += 1;
 }
 
 // Append a string at the end of the string.
-CORDDEF void cord_append_string(char **str, char *c)
+CORDDEF void cord_append_string(cordString* str, const char *c) 
 {
-    int len = strlen(*str);
-    *str = realloc(*str, (len + strlen(c) + 1) * sizeof(char));
-    if (*str == NULL)
-    {
-        printf("realloc failed\n");
-        exit(1);
-    }
-    strcat(*str, c);
+    cord_append_string_len(str, c, strlen(c));
+}
+
+// append a string at the end of a string (based on length)
+CORDDEF void cord_append_string_len(cordString* str, const char *c, size_t size)
+{
+    size_t len = cord_string_len(*str);
+    
+    if (len + size + 1 >= CORD_STRING_CAP(*str))
+        *str = cord_realloc_string(str, (len + size + 2));
+
+    strncpy((*str) + len, c, size);
+    (*str)[len + size] = '\0';
+    CORD_STRING_LEN(*str) += size;
 }
 
 // Convert a string to uppercase.
-CORDDEF void cord_to_uppercase(char **str)
+CORDDEF void cord_to_uppercase(cordString* str)
 {
-    for (int i = 0; i < strlen(*str); i++)
+    for (int i = 0; i < cord_string_len(*str); i++)
     {
         if ((*str)[i] >= 'a' && (*str)[i] <= 'z')
         {
@@ -95,9 +173,9 @@ CORDDEF void cord_to_uppercase(char **str)
 }
 
 // Convert a string to lowercase.
-CORDDEF void cord_to_lowercase(char **str)
+CORDDEF void cord_to_lowercase(cordString* str)
 {
-    for (int i = 0; i < strlen(*str); i++)
+    for (int i = 0; i < cord_string_len(*str); i++)
     {
         if ((*str)[i] >= 'A' && (*str)[i] <= 'Z')
         {
@@ -107,9 +185,9 @@ CORDDEF void cord_to_lowercase(char **str)
 }
 
 // Trim a string.
-CORDDEF void cord_trim(char **str)
+CORDDEF void cord_trim(cordString* str)
 {
-    int len = strlen(*str);
+    size_t len = cord_string_len(*str);
     int start = 0;
     int end = len - 1;
 
@@ -129,12 +207,14 @@ CORDDEF void cord_trim(char **str)
     new_str[new_len] = '\0';
     free(*str);
     *str = new_str;
+
+    CORD_STRING_LEN(*str) = new_len;
 }
 
 // Left trim a string.
-CORDDEF void cord_ltrim(char **str)
+CORDDEF void cord_ltrim(cordString* str)
 {
-    int len = strlen(*str);
+    size_t len = cord_string_len(*str);
     int start = 0;
 
     while ((*str)[start] == ' ')
@@ -143,17 +223,19 @@ CORDDEF void cord_ltrim(char **str)
     }
 
     int new_len = len - start;
-    char *new_str = malloc(new_len + 1);
-    strncpy(new_str, *str + start, new_len);
-    new_str[new_len] = '\0';
-    free(*str);
+
+    cordString new_str = cord_new_string_len(*str + start, new_len);
+
+    cord_free_string(str);
     *str = new_str;
+
+    CORD_STRING_LEN(*str) = new_len;
 }
 
 // Right trim a string.
-CORDDEF void cord_rtrim(char **str)
+CORDDEF void cord_rtrim(cordString* str)
 {
-    int len = strlen(*str);
+    size_t len = cord_string_len(*str);
     int end = len - 1;
 
     while ((*str)[end] == ' ')
@@ -162,23 +244,24 @@ CORDDEF void cord_rtrim(char **str)
     }
 
     int new_len = end + 1;
-    char *new_str = malloc(new_len + 1);
-    strncpy(new_str, *str, new_len);
-    new_str[new_len] = '\0';
-    free(*str);
+    cordString new_str = cord_new_string_len(*str, new_len);
+
+    cord_free_string(str);
     *str = new_str;
+    
+    CORD_STRING_LEN(*str) = new_len;
 }
 
 // Get a character at a specific index.
-CORDDEF char cord_char_at(char **str, int index)
+CORDDEF char cord_char_at(cordString* str, int index)
 {
     return (*str)[index];
 }
 
 // Get the index of a character.
-CORDDEF int cord_index_of(char **str, char c)
+CORDDEF int cord_index_of(cordString* str, char c)
 {
-    for (int i = 0; i < strlen(*str); i++)
+    for (int i = 0; i < cord_string_len(*str); i++)
     {
         if ((*str)[i] == c)
         {
@@ -189,26 +272,26 @@ CORDDEF int cord_index_of(char **str, char c)
 }
 
 // Repeat a character and append it to the string.
-CORDDEF void cord_repeat_char(char **str, char c, int count)
+CORDDEF void cord_repeat_char(cordString* str, char c, int count)
 {
-    int len = strlen(*str);
-    *str = realloc(*str, (len + count + 1) * sizeof(char));
-    if (*str == NULL)
-    {
-        printf("realloc failed\n");
-        exit(1);
-    }
+    size_t len = cord_string_len(*str);
+    
+    if (len + count + 1 >= CORD_STRING_CAP(*str))
+        *str = cord_realloc_string(str, (len + count + 1));
+
     for (int i = 0; i < count; i++)
     {
         (*str)[len + i] = c;
     }
     (*str)[len + count] = '\0';
+
+    CORD_STRING_LEN(*str) += count;
 }
 
 // Reverse a string.
-CORDDEF void cord_reverse(char **str)
+CORDDEF void cord_reverse(cordString* str)
 {
-    int len = strlen(*str);
+    size_t len = cord_string_len(*str);
     for (int i = 0; i < len / 2; i++)
     {
         char temp = (*str)[i];
@@ -218,9 +301,9 @@ CORDDEF void cord_reverse(char **str)
 }
 
 // Replace a character with another character.
-CORDDEF void cord_replace_char(char **str, char c, char new_c)
+CORDDEF void cord_replace_char(cordString* str, char c, char new_c)
 {
-    for (int i = 0; i < strlen(*str); i++)
+    for (int i = 0; i < cord_string_len(*str); i++)
     {
         if ((*str)[i] == c)
         {
@@ -230,9 +313,9 @@ CORDDEF void cord_replace_char(char **str, char c, char new_c)
 }
 
 // Replace a string with another string case insensitive.
-CORDDEF void cord_ireplace_char(char **str, char c, char new_c)
+CORDDEF void cord_ireplace_char(cordString* str, char c, char new_c)
 {
-    for (int i = 0; i < strlen(*str); i++)
+    for (int i = 0; i < cord_string_len(*str); i++)
     {
         if ((*str)[i] == c || (*str)[i] == c + 32 || (*str)[i] == c - 32)
         {
@@ -242,15 +325,13 @@ CORDDEF void cord_ireplace_char(char **str, char c, char new_c)
 }
 
 // Pad a string with a character at the start.
-CORDDEF void cord_pad_start(char **str, char c, int count)
+CORDDEF void cord_pad_start(cordString* str, char c, int count)
 {
-    int len = strlen(*str);
-    *str = realloc(*str, (len + count + 1) * sizeof(char));
-    if (*str == NULL)
-    {
-        printf("realloc failed\n");
-        exit(1);
-    }
+    size_t len = cord_string_len(*str);
+    
+    if (len + count + 1 >= CORD_STRING_CAP(*str))
+        *str = cord_realloc_string(str, (len + count + 1));
+
     for (int i = len - 1; i >= 0; i--)
     {
         (*str)[i + count] = (*str)[i];
@@ -260,29 +341,35 @@ CORDDEF void cord_pad_start(char **str, char c, int count)
         (*str)[i] = c;
     }
     (*str)[len + count] = '\0';
+
+    CORD_STRING_LEN(*str) += count;
 }
 
 // Pad a string with a character at the end.
-CORDDEF void cord_pad_end(char **str, char c, int count)
+CORDDEF void cord_pad_end(cordString* str, char c, int count)
 {
-    int len = strlen(*str);
-    *str = realloc(*str, (len + count + 1) * sizeof(char));
-    if (*str == NULL)
-    {
-        printf("realloc failed\n");
-        exit(1);
-    }
+    size_t len = cord_string_len(*str);
+    
+    if (len + count + 1 >= CORD_STRING_CAP(*str))
+        *str = cord_realloc_string(str, (len + count + 1));
+
     for (int i = 0; i < count; i++)
     {
         (*str)[len + i] = c;
     }
     (*str)[len + count] = '\0';
+
+    CORD_STRING_LEN(*str) += count;
 }
 
 // If the string starts with a specific string.
-CORDDEF bool cord_starts_with(char **str, char *start)
+CORDDEF bool cord_starts_with(cordString* str, const char* start) 
 {
-    int len = strlen(start);
+    return cord_starts_with_len(str, start, strlen(start));
+}
+
+CORDDEF bool cord_starts_with_len(cordString* str, const char* start, size_t len)
+{
     for (int i = 0; i < len; i++)
     {
         if ((*str)[i] != start[i])
@@ -294,10 +381,14 @@ CORDDEF bool cord_starts_with(char **str, char *start)
 }
 
 // If the string ends with a specific string.
-CORDDEF bool cord_ends_with(char **str, char *end)
+CORDDEF bool cord_ends_with(cordString* str, const char *end)
 {
-    int len = strlen(end);
-    int str_len = strlen(*str);
+    return cord_ends_with_len(str, end, strlen(end));
+}
+
+CORDDEF bool cord_ends_with_len(cordString* str, const char *end, size_t len)
+{
+    int str_len = cord_string_len(*str);
     for (int i = 0; i < len; i++)
     {
         if ((*str)[str_len - len + i] != end[i])
@@ -309,11 +400,14 @@ CORDDEF bool cord_ends_with(char **str, char *end)
 }
 
 // Wraps a string to a specific length.
-CORDDEF void cord_wrap(char **str, int length)
+CORDDEF void cord_wrap(cordString* str, size_t length)
 {
-    int len = strlen(*str);
+
+    size_t len = cord_string_len(*str);
     int new_len = len + (len / length);
-    char *new_str = malloc(new_len + 1);
+
+    cordString new_str = cord_new_string_reserve(new_len + 1);
+
     int j = 0;
     for (int i = 0; i < len; i++)
     {
@@ -326,14 +420,17 @@ CORDDEF void cord_wrap(char **str, int length)
         j++;
     }
     new_str[new_len] = '\0';
-    free(*str);
+
+    cord_free_string(str);
     *str = new_str;
+
+    CORD_STRING_LEN(*str) = new_len;
 }
 
 // Remove a character from a string.
-CORDDEF void cord_remove_char(char **str, char c)
+CORDDEF void cord_remove_char(cordString* str, char c)
 {
-    int len = strlen(*str);
+    size_t len = cord_string_len(*str);
     int new_len = len;
     for (int i = 0; i < len; i++)
     {
@@ -342,7 +439,9 @@ CORDDEF void cord_remove_char(char **str, char c)
             new_len--;
         }
     }
-    char *new_str = malloc(new_len + 1);
+
+    cordString new_str = cord_new_string_reserve(new_len + 1);
+
     int j = 0;
     for (int i = 0; i < len; i++)
     {
@@ -353,14 +452,18 @@ CORDDEF void cord_remove_char(char **str, char c)
         }
     }
     new_str[new_len] = '\0';
-    free(*str);
+
+    cord_free_string(str);
     *str = new_str;
+
+    CORD_STRING_LEN(*str) = new_len;
 }
 
 // Remove a character from a string case insensitive.
-CORDDEF void cord_iremove_char(char **str, char c)
+CORDDEF void cord_iremove_char(cordString* str, char c)
 {
-    int len = strlen(*str);
+    size_t len = cord_string_len(*str);
+
     int new_len = len;
     for (int i = 0; i < len; i++)
     {
@@ -382,13 +485,19 @@ CORDDEF void cord_iremove_char(char **str, char c)
     new_str[new_len] = '\0';
     free(*str);
     *str = new_str;
+
+    CORD_STRING_LEN(*str) = new_len;
 }
 
 // If a string includes a substring.
-CORDDEF bool cord_includes(char **str, char *substr)
+CORDDEF bool cord_includes(cordString* str, const char* substr) 
 {
-    int len = strlen(*str);
-    int substr_len = strlen(substr);
+    return cord_includes_len(str, substr, strlen(substr));
+}
+
+CORDDEF bool cord_includes_len(cordString* str, const char* substr, size_t substr_len)
+{
+    size_t len = cord_string_len(*str);
     for (int i = 0; i < len; i++)
     {
         if ((*str)[i] == substr[0])
