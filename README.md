@@ -123,7 +123,7 @@ ulla paratur. Excepteur snt occaecat cupdatat non prodent, sunt n culpa qu
 ```
 
 ## Alternative Libraries
-
+- [EimaMei/sili - a cross-platform standard library for modern C programming (including string manipulation)](https://github.com/EimaMei/sili)
 - [antirez/sds - Simple Dynamic Strings library for C](https://github.com/antirez/sds)
 - [tsoding/sv - Simple String_View implementation for C programming language.](https://github.com/tsoding/sv)
 - [MichaelJWelsh/SmartString - A Lightweight, Fast, and Safe C Library Meant to Mimic String Functionality Present in C++](https://github.com/MichaelJWelsh/SmartString)
