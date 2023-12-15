@@ -85,7 +85,7 @@ CORDDEF cordString cord_new_string_reserve(size_t len)
 CORDDEF cordString cord_new_string_len(const char* str, size_t str_len) 
 {
 	cordString res_str = cord_new_string_reserve(str_len);
-	memcpy(res_str, str, str_len);
+	strncpy(res_str, str, str_len);
 
 	cordString_header* header = CORD_STRING_HEADER(res_str);
 	header->len = str_len;
@@ -109,7 +109,7 @@ CORDDEF cordString cord_realloc_string(cordString* str, size_t newSize)
     size_t len = cord_string_len(*str);
 
 	cordString res_str = cord_new_string_reserve(newSize);
-	memcpy(res_str, *str, len);
+	strncpy(res_str, *str, len);
 
     cord_free_string(str);
     
@@ -197,10 +197,11 @@ CORDDEF void cord_trim(cordString* str)
     }
 
     int new_len = end - start + 1;
-    char *new_str = malloc(new_len + 1);
+    char *new_str = cord_new_string_reserve(new_len + 1);
+
     strncpy(new_str, *str + start, new_len);
     new_str[new_len] = '\0';
-    free(*str);
+    cord_free_string(str);
     *str = new_str;
 
     CORD_STRING_LEN(*str) = new_len;
@@ -467,7 +468,8 @@ CORDDEF void cord_iremove_char(cordString* str, char c)
             new_len--;
         }
     }
-    char *new_str = malloc(new_len + 1);
+    char *new_str = cord_new_string_reserve(new_len + 1);
+
     int j = 0;
     for (int i = 0; i < len; i++)
     {
@@ -478,7 +480,8 @@ CORDDEF void cord_iremove_char(cordString* str, char c)
         }
     }
     new_str[new_len] = '\0';
-    free(*str);
+    cord_free_string(str);
+
     *str = new_str;
 
     CORD_STRING_LEN(*str) = new_len;
@@ -493,24 +496,10 @@ CORDDEF bool cord_includes(cordString* str, const char* substr)
 CORDDEF bool cord_includes_len(cordString* str, const char* substr, size_t substr_len)
 {
     size_t len = cord_string_len(*str);
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i < len && (len - i) >= substr_len; i++)
     {
-        if ((*str)[i] == substr[0])
-        {
-            bool found = true;
-            for (int j = 0; j < substr_len; j++)
-            {
-                if ((*str)[i + j] != substr[j])
-                {
-                    found = false;
-                    break;
-                }
-            }
-            if (found)
-            {
-                return true;
-            }
-        }
+        if (strncmp(*str + i, substr, substr_len) == 0)
+            return true;
     }
     return false;
 }
