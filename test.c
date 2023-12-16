@@ -3,14 +3,14 @@
 #define CORD_IMPLEMENTATION
 #include "cord.h"
 
-void debug(char *str, char *func)
+void debug(cordString str, char *func)
 {
-    printf("f:%s :: l:%lu => v:`%s`\n", func, strlen(str), str);
+    printf("f:%s :: l:%lu => v:`%s`\n", func, cord_string_len(str), str);
 }
 
 int main(void)
 {
-    char *o = cord_new_string("  Hello    ");
+    cordString o = cord_new_string("  Hello    ");
     debug(o, "new_string");
 
     cord_ltrim(&o);
@@ -32,7 +32,7 @@ int main(void)
     debug(o, "to_lowercase");
 
     printf("f:char_at char_at: %c\n", cord_char_at(&o, 3));
-    printf("f:index_of index_of: %d\n", cord_index_of(&o, 'l'));
+    printf("f:index_of index_of: %zu\n", cord_index_of(&o, 'l'));
 
     cord_repeat_char(&o, 'X', 10);
     debug(o, "repeat_char");
@@ -58,7 +58,7 @@ int main(void)
     printf("f:ends_with (__): %d\n", cord_ends_with(&o, "__"));
     printf("f:ends_with ( ): %d\n", cord_ends_with(&o, " "));
 
-    char *k = cord_new_string("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+    cordString k = cord_new_string("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
     cord_wrap(&k, 80);
     printf("f:wrap (80): %s\n", k);
 
