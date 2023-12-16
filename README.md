@@ -25,7 +25,7 @@ Library is not using any external dependencies and uses only standards C librari
 
 int main(void)
 {
-    char *str = cord_new_string("Some string");
+    cordString str = cord_new_string("Some string");
     cord_append_char(&str, 'a');
     cord_append_string(&str, " and some more text    ");
     cord_trim(&str);
@@ -36,33 +36,38 @@ int main(void)
 }
 ```
 
-Because of the use of `realloc`, you must create a new string with `malloc` or use the function that comes with the library called `cordc_new_string`. Other than that, the string behaves like a normal C string. So all the function that come with `string.h` can be used with it.
+Because of the use of `realloc` and the string header, you use the function that comes with the library called `cord_new_string` and `cord_free_string` to free the string. Other than that, the string behaves like a normal C string. So all the function that come with `string.h` can be used with it.
 
 ## Current Features
+- `cordString cord_new_string(char *str);`
+- `cordString cord_new_string_reserve(size_t len);`
+- `void cord_free_string(cordString* str);`
+- `cordString cord_realloc_string(cordString* str, size_t newSize);`
+- `size_t cord_string_len(cordString str);`
+- `void cord_append_char(cordString* str, char c);`
+- `void cord_append_string(cordString* str, char *str2);`
+- `void cord_to_uppercase(cordString* str);`
+- `void cord_to_lowercase(cordString* str);`
+- `void cord_trim(cordString* str);`
+- `void cord_ltrim(cordString* str);`
+- `void cord_rtrim(cordString* str);`
+- `char cord_char_at(cordString* str, size_t index);`
+- `size_t cord_index_of(cordString* str, char c);`
+- `void cord_repeat_char(cordString* str, char c, size_t count);`
+- `void cord_reverse(cordString* str);`
+- `void cord_replace_char(cordString* str, char c, char new_c);`
+- `void cord_ireplace_char(cordString* str, char c, char new_c);`
+- `void cord_pad_start(cordString* str, char c, size_t count);`
+- `void cord_pad_end(cordString* str, char c, size_t count);`
+- `bool cord_starts_with(cordString* str, char *start);`
+- `bool cord_ends_with(cordString* str, char *end);`
+- `void cord_wrap(cordString* str, size_t length);`
+- `void cord_remove_char(cordString* str, char c);`
+- `void cord_iremove_char(cordString* str, char c);`
+- `bool cord_includes(cordString* str, char *substr);`
 
-- `char *cord_new_string(char *str);`
-- `void cord_free_string(char **str);`
-- `void cord_append_char(char **str, char c);`
-- `void cord_append_string(char **str, char *str2);`
-- `void cord_to_uppercase(char **str);`
-- `void cord_to_lowercase(char **str);`
-- `void cord_trim(char **str);`
-- `void cord_ltrim(char **str);`
-- `void cord_rtrim(char **str);`
-- `char cord_char_at(char **str, int index);`
-- `int cord_index_of(char **str, char c);`
-- `void cord_repeat_char(char **str, char c, int count);`
-- `void cord_reverse(char **str);`
-- `void cord_replace_char(char **str, char c, char new_c);`
-- `void cord_ireplace_char(char **str, char c, char new_c);`
-- `void cord_pad_start(char **str, char c, int count);`
-- `void cord_pad_end(char **str, char c, int count);`
-- `bool cord_starts_with(char **str, char *start);`
-- `bool cord_ends_with(char **str, char *end);`
-- `void cord_wrap(char **str, int length);`
-- `void cord_remove_char(char **str, char c);`
-- `void cord_iremove_char(char **str, char c);`
-- `bool cord_includes(char **str, char *substr);`
+NOTE : all functions with c-string (char*) input have their own respective `_len()` functions\
+eg. `bool cord_includes(cordString* str, char *substr);` -> `bool cord_includes_len(cordString* str, const char* substr, size_t len);`
 
 ## Observations & Critics
 
@@ -120,6 +125,8 @@ d exerctaton ullamco labors ns ut alqup ex ea commodo consequat. Dus aut
 e rure dolor n reprehendert n voluptate velt esse cllum dolore eu fugat n
 ulla paratur. Excepteur snt occaecat cupdatat non prodent, sunt n culpa qu
  offca deserunt mollt anm d est laborum.`
+f:cord_includes (c): 1
+f:cord_includes (::): 0
 ```
 
 ## Alternative Libraries
