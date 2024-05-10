@@ -325,7 +325,7 @@ CORDDEF void cord_pad_start(cordString* str, char c, size_t count)
     if (len + count + 1 >= CORD_STRING_CAP(*str))
         *str = cord_realloc_string(str, (len + count + 1));
 
-    for (size_t i = len - 1; i >= 0; i--)
+    for (ssize_t i = len - 1; i >= 0; i--)
     {
         (*str)[i + count] = (*str)[i];
     }
